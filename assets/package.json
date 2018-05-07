@@ -1,0 +1,33 @@
+{
+  "repository": {},
+  "private": true,
+  "scripts": {
+    "dev": "webpack --mode development",
+    "watch": "webpack --watch --color --mode development",
+    "deploy": "webpack -p --mode production"
+  },
+  "dependencies": {
+    "axios": "^0.18.0",
+    "bootstrap-sass": "3",
+    "lodash.uniq": "^4.5.0",
+    "mini-css-extract-plugin": "^0.4.0",
+    "phoenix": "file:../deps/phoenix",
+    "react": "^16.3.2",
+    "react-bootstrap": "^0.32.1",
+    "react-dom": "^16.3.2"
+  },
+  "devDependencies": {
+    "babel-core": "^6.26.3",
+    "babel-loader": "^7.1.4",
+    "babel-preset-env": "^1.6.1",
+    "babel-preset-react": "^6.24.1",
+    "babel-preset-stage-2": "^6.24.1",
+    "copy-webpack-plugin": "^4.5.1",
+    "css-loader": "^0.28.11",
+    "node-sass": "^4.9.0",
+    "sass-loader": "^7.0.1",
+    "style-loader": "^0.21.0",
+    "webpack": "^4.6.0",
+    "webpack-cli": "^2.1.2"
+  }
+}

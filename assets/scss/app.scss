@@ -1,0 +1,44 @@
+@import "bootstrap";
+
+body {
+  padding-top: 20px;
+}
+
+.Group, .Task {
+  cursor: pointer;
+  min-height: 86px;
+  margin-top: 0;
+  border-top: 1px solid #ebebeb;
+  &:last-child {
+    border-bottom: 1px solid #ebebeb;
+  }
+  &:hover {
+    background-color: #ebebeb;
+  }
+}
+
+.Group {
+  padding: 20px 10px;
+  .group-subheading {
+    margin: 0;
+    color: #9b9b9b;
+    text-transform: uppercase;
+  }
+}
+
+.Task {
+  padding: 30px 10px 0;
+  &.Locked {
+    color: #9b9b9b;
+  }
+  &.Completed {
+    text-decoration: line-through;
+  }
+}
+
+.task-list-header {
+  a > small {
+    font-size: 55%;
+    color: #337ab7;
+  }
+}
