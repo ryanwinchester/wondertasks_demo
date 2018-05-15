@@ -4,9 +4,15 @@ defmodule Wondertasks.Tasks do
   """
 
   import Ecto.Query, warn: false
+  alias Ecto.Multi
+
   alias Wondertasks.Repo
 
-  alias Wondertasks.Tasks.Group
+  alias Wondertasks.Tasks.{Group, Task}
+
+  # ----------------------------------------------------------------------------
+  # Groups
+  # ----------------------------------------------------------------------------
 
   @doc """
   Returns the list of groups.
@@ -67,6 +73,27 @@ defmodule Wondertasks.Tasks do
       {:error, %Ecto.Changeset{}}
 
   """
+  def update_group(%Group{} = group, %{"mark_tasks_complete" => true} = attrs) do
+    group = Repo.preload(group, :tasks)
+
+    complete_group_tasks = fn _ ->
+      now = NaiveDateTime.utc_now()
+      group.tasks
+      |> Enum.map(&update_task(&1, %{"completing_group?" => true, "completed_at" => now}))
+      |> Enum.reduce({:ok, []}, fn
+          {:ok, task}, {:ok, tasks} -> {:ok, [task | tasks]}
+          {:ok, _task}, {:error, changesets} -> {:error, changesets}
+          {:error, changeset}, {:ok, _tasks} -> {:error, [changeset]}
+          {:error, changeset}, {:error, changesets} -> {:error, [changeset | changesets]}
+        end)
+    end
+
+    Multi.new()
+    |> Multi.run(:complete_group_tasks, complete_group_tasks)
+    |> Multi.update(:group, Group.changeset(group, attrs))
+    |> Repo.transaction()
+  end
+
   def update_group(%Group{} = group, attrs) do
     group
     |> Group.changeset(attrs)
@@ -102,7 +129,9 @@ defmodule Wondertasks.Tasks do
     Group.changeset(group, %{})
   end
 
-  alias Wondertasks.Tasks.Task
+  # ----------------------------------------------------------------------------
+  # Tasks
+  # ----------------------------------------------------------------------------
 
   @doc """
   Returns the list of tasks.

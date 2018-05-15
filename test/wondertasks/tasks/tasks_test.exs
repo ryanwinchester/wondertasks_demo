@@ -35,6 +35,16 @@ defmodule Wondertasks.TasksTest do
       assert group.name == data.name
     end
 
+    test "update_group/2 with `mark_tasks_complete` updates the group" do
+      group = insert(:group)
+      insert_list(3, :task, group: group, completed_at: nil)
+      data = string_params_for(:group) |> Map.put("mark_tasks_complete", true)
+      assert {:ok, %{group: %Group{} = updated}} = Tasks.update_group(group, data)
+      assert updated.name == data["name"]
+      updated = Wondertasks.Repo.preload(updated, :tasks, force: true)
+      assert Enum.all?(updated.tasks, &(&1.completed_at))
+    end
+
     test "update_group/2 with invalid data returns error changeset" do
       group = insert(:group)
       data = params_for(:group, name: -1)

@@ -56,6 +56,25 @@ defmodule WondertasksWeb.GroupControllerTest do
       conn = put conn, group_path(conn, :update, group), group: data
       assert json_response(conn, 422)["errors"] != %{}
     end
+
+    test "renders group when `mark_tasks_complete` is set", %{conn: conn, group: %Group{id: id} = group} do
+      data = string_params_for(:group) |> Map.put("mark_tasks_complete", true)
+      conn = put conn, group_path(conn, :update, group), group: data
+      assert %{"id" => ^id} = json_response(conn, 200)
+
+      conn = get conn, group_path(conn, :show, id)
+      assert json = json_response(conn, 200)
+      assert json["id"] == id
+      assert json["name"] == data["name"]
+    end
+
+    test "renders errors when `mark_tasks_complete` is set and dependents aren't complete", %{conn: conn, group: group} do
+      t1 = insert(:task, completed_at: nil)
+      insert(:task, group: group, parents: [t1], completed_at: nil)
+      data = string_params_for(:group) |> Map.put("mark_tasks_complete", true)
+      conn = put conn, group_path(conn, :update, group), group: data
+      assert json_response(conn, 422)["errors"] != %{}
+    end
   end
 
   describe "delete group" do

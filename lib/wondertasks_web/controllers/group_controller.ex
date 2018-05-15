@@ -28,8 +28,10 @@ defmodule WondertasksWeb.GroupController do
   def update(conn, %{"id" => id, "group" => group_params}) do
     group = Tasks.get_group!(id)
 
-    with {:ok, %Group{} = group} <- Tasks.update_group(group, group_params) do
-      render(conn, "show.json", group: group)
+    case Tasks.update_group(group, group_params) do
+      {:ok, %Group{} = group} -> render(conn, "show.json", group: group)
+      {:ok, %{group: %Group{} = group}} -> render(conn, "show.json", group: group)
+      errors -> errors
     end
   end
 
